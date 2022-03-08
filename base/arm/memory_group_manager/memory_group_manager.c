@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  *
- * (C) COPYRIGHT 2019-2020 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2019-2021 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -474,7 +474,6 @@ static struct platform_driver memory_group_manager_driver = {
 	.remove = memory_group_manager_remove,
 	.driver = {
 		.name = "physical-memory-group-manager",
-		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(memory_group_manager_dt_ids),
 		/*
 		 * Prevent the mgm_dev from being unbound and freed, as other's

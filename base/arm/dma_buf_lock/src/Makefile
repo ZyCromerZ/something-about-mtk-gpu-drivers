@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 #
-# (C) COPYRIGHT 2012, 2020 ARM Limited. All rights reserved.
+# (C) COPYRIGHT 2012, 2020-2021 ARM Limited. All rights reserved.
 #
 # This program is free software and is provided to you under the terms of the
 # GNU General Public License version 2 as published by the Free Software
@@ -18,8 +18,22 @@
 #
 #
 
-config DMA_SHARED_BUFFER_TEST_EXPORTER
-	tristate "Test exporter for the dma-buf framework"
-	depends on DMA_SHARED_BUFFER
-	help
-	  This option enables the test exporter usable to help test importerts.
+# linux build system bootstrap for out-of-tree module
+
+# default to building for the host
+ARCH ?= $(shell uname -m)
+
+# Handle Android Common Kernel source naming
+KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build
+KDIR ?= $(KERNEL_SRC)
+
+all: dma_buf_lock
+
+dma_buf_lock:
+	$(MAKE) ARCH=$(ARCH) -C $(KDIR) M=$(CURDIR) EXTRA_CFLAGS="-I$(CURDIR)/../../../../../include"
+
+clean:
+	$(MAKE) ARCH=$(ARCH) -C $(KDIR) M=$(CURDIR) clean
+
+modules_install:
+	$(MAKE) ARCH=$(ARCH) -C $(KDIR) M=$(CURDIR) modules_install

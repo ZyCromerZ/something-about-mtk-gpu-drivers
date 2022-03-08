@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  *
- * (C) COPYRIGHT 2012-2020 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2012-2021 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -221,7 +221,11 @@ static void dma_buf_te_release(struct dma_buf *buf)
 		for (i = 0; i < alloc->nr_pages; i++)
 			__free_page(alloc->pages[i]);
 	}
+#if (KERNEL_VERSION(4, 12, 0) <= LINUX_VERSION_CODE)
+	kvfree(alloc->pages);
+#else
 	kfree(alloc->pages);
+#endif
 	kfree(alloc);
 }
 
@@ -490,7 +494,12 @@ static int do_dma_buf_te_ioctl_alloc(struct dma_buf_te_ioctl_alloc __user *buf, 
 	alloc->nr_pages = alloc_req.size;
 	alloc->contiguous = contiguous;
 
+#if (KERNEL_VERSION(4, 12, 0) <= LINUX_VERSION_CODE)
+	alloc->pages = kvzalloc(sizeof(struct page *) * alloc->nr_pages, GFP_KERNEL);
+#else
 	alloc->pages = kzalloc(sizeof(struct page *) * alloc->nr_pages, GFP_KERNEL);
+#endif
+
 	if (!alloc->pages) {
 		dev_err(te_device.this_device,
 				"%s: couldn't alloc %zu page structures",
@@ -590,7 +599,11 @@ no_page:
 			__free_page(alloc->pages[i]);
 	}
 free_page_struct:
+#if (KERNEL_VERSION(4, 12, 0) <= LINUX_VERSION_CODE)
+	kvfree(alloc->pages);
+#else
 	kfree(alloc->pages);
+#endif
 free_alloc_object:
 	kfree(alloc);
 no_alloc_object:

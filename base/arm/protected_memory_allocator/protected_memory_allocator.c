@@ -540,7 +540,6 @@ static struct platform_driver protected_memory_allocator_driver = {
 	.remove = protected_memory_allocator_remove,
 	.driver = {
 		.name = "simple_protected_memory_allocator",
-		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(protected_memory_allocator_dt_ids),
 	}
 };
